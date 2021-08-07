@@ -20,20 +20,20 @@ class TestUser(unittest.TestCase):
         del self.response_user_data
 
     def test_response_success1(self):
-        """ 一つずつデータ比較を書く処理 """
+        """ 一つずつ、比較項目を書く処理 手間。。。 """
         self.assertEqual(self.request_data['data']['id'], self.response_data['data']['id'])
         self.assertEqual(self.request_data['data']['name'], self.response_data['data']['name'])
         self.assertEqual(self.request_data['data']['email'], self.response_data['data']['email'])
         self.assertEqual(self.request_data['data']['hobby'], self.response_data['data']['hobby'])
 
     def test_response_success2(self):
-        """ テストファイルの項目をすべて比較 """
+        """ テストファイル項目をループで簡素にすべて比較 """
         self.tf._tmp_one_nest_success_response_data(request_data=self.request_data,
                                                     response_data=self.response_data,
                                                     first_key='data')
 
     def test_response_success3(self):
-        """ テストファイル, 比較項目テスト """
+        """ テストファイル, ２階層ネスト """
         self.tf._tmp_tow_nest_success_response_data(request_data=self.request_user,
                                                     response_data=self.response_user_data,
                                                     idx=0, first_key='data', second_key='user')
