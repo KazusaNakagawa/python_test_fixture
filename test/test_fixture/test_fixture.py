@@ -10,13 +10,13 @@ class TestFixture(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
-    def _read_response_json_file(self, open_file='../data/response.json'):
+    def read_response_json_file(self, open_file='../data/response.json'):
         with open(open_file, 'r') as f:
             read_file = json.load(f)
 
         return read_file
 
-    def _tmp_one_nest_success_response_data(self, response_data: dict, request_data: dict, first_key='data'):
+    def tmp_one_nest_success_response_data(self, response_data: dict, request_data: dict, first_key='data'):
         """ 1階層の response データと比較するテスト
 
         ExSample:
@@ -34,8 +34,8 @@ class TestFixture(unittest.TestCase):
             with self.subTest(key=key):
                 self.assertEqual(request_data[first_key][key], response_data[first_key][key])
 
-    def _tmp_tow_nest_success_response_data(self, response_data: dict, request_data: dict, idx=0, first_key='data',
-                                            second_key='user'):
+    def tmp_tow_nest_success_response_data(self, response_data: dict, request_data: dict, idx=0, first_key='data',
+                                           second_key='user'):
         """ 2階層の response データと比較するテスト
 
         ExSample:
