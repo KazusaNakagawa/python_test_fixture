@@ -2,3 +2,7 @@
 
 # virtual environment
 venv/
+
+# extension
+*.db
+*.sql
