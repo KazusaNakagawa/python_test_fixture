@@ -19,24 +19,31 @@ class DB(object):
         con.cursor()
         con.close()
 
-    def create_table(self, con) -> None:
+    def create_table(self, con, *args) -> None:
         cur = con.cursor()
 
-        cur.execute(f'''CREATE TABLE {self.table_name}
+        cur.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name}
                    (id PRIMARY KEY,
-                    date text,
-                    trans text,
-                    symbol text,
-                    qty real,
-                    price real)'''
+                    {args[0]} text,
+                    {args[1]} int,
+                    {args[2]} text
+                    )'''
                     )
 
-    def query_insert(self, con, insert_num=460):
+    def query_insert(self, con, insert_num=460, *args):
         cur = con.cursor()
 
+        email = args[2].split('@')
         # Insert a row of data
         for i in range(1, insert_num + 1):
-            cur.execute(f"INSERT INTO {self.table_name} VALUES ('{i}','2006-01-05','BUY_{i}','RHAT',100,35.14)")
+            cur.execute(
+                f'''INSERT INTO {self.table_name} VALUES (
+                '{i}',
+                '{args[0]}_{i}',
+                '{int(args[1]) + i}',
+                '{email[0]}_{i}@{email[1]}'
+                )'''
+            )
 
         con.commit()
 
@@ -48,7 +55,7 @@ class DB(object):
     def query_write_file(self, con, file_name='test.text'):
         cur = con.cursor()
         with open(file_name, 'w', encoding='utf-8') as f:
-            for row in cur.execute(f"SELECT * FROM {self.table_name} ORDER BY price"):
+            for row in cur.execute(f"SELECT * FROM {self.table_name} ORDER BY id"):
                 write_str = f"INSERT INTO {self.table_name} VALUES {row};\n"
                 f.write(write_str)
 
@@ -58,18 +65,19 @@ class DB(object):
 
 
 if __name__ == '__main__':
-    DB_NAME = 'test'
-    INSERT_RECODE_NUM = 460000
+    DB_NAME = 'user'
+    TABLE_NAME = 'user'
+    INSERT_RECODE_NUM = 460
 
     print('start ...')
 
-    db1 = DB(db_name=f"../../db/{DB_NAME}.db", table_name='stocks')
+    db1 = DB(db_name=f"../../db/{DB_NAME}.db", table_name=TABLE_NAME)
 
-    # con = db1.connect_db()
-    con = db1.connect_db_ram()
+    con = db1.connect_db()
+    # con = db1.connect_db_ram()
 
-    db1.create_table(con)
-    db1.query_insert(con, insert_num=INSERT_RECODE_NUM)
+    db1.create_table(con, 'name', 'age', 'email')
+    db1.query_insert(con, INSERT_RECODE_NUM, 'test_name', '0', 'sample@com')
 
     db1.query_write_file(con=con, file_name=f"../../data/{DB_NAME}.sql")
     # db1.query_drop_(con)
