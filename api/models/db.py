@@ -22,8 +22,8 @@ class DB(object):
     def create_table(self, con, *args) -> None:
         cur = con.cursor()
 
-        cur.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name}
-                   (id PRIMARY KEY,
+        cur.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name} (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     {args[0]} text,
                     {args[1]} int,
                     {args[2]} text
@@ -37,8 +37,7 @@ class DB(object):
         # Insert a row of data
         for i in range(1, insert_num + 1):
             cur.execute(
-                f'''INSERT INTO {self.table_name} VALUES (
-                '{i}',
+                f'''INSERT INTO {self.table_name} ( name, age, email ) VALUES (
                 '{args[0]}_{i}',
                 '{int(args[1]) + i}',
                 '{email[0]}_{i}@{email[1]}'
