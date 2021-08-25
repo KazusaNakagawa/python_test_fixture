@@ -30,7 +30,7 @@ class DB(object):
                     )'''
                     )
 
-    def query_insert(self, con, insert_num=460, *args):
+    def query_insert(self, *args, con, insert_num: int = 460):
         cur = con.cursor()
 
         email = args[2].split('@')
