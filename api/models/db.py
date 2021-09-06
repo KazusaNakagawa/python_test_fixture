@@ -19,7 +19,7 @@ class DB(object):
         con.cursor()
         con.close()
 
-    def create_table(self, con, *args) -> None:
+    def create_table(self, *args, con,) -> None:
         cur = con.cursor()
 
         cur.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name} (
@@ -64,6 +64,8 @@ class DB(object):
 
 
 if __name__ == '__main__':
+    MEMORY = 1
+
     DB_NAME = 'user'
     TABLE_NAME = 'user'
     INSERT_RECODE_NUM = 460
@@ -72,11 +74,14 @@ if __name__ == '__main__':
 
     db1 = DB(db_name=f"../../db/{DB_NAME}.db", table_name=TABLE_NAME)
 
-    con = db1.connect_db()
-    # con = db1.connect_db_ram()
+    if MEMORY:
+        con = db1.connect_db_ram()
 
-    db1.create_table(con, 'name', 'age', 'email')
-    db1.query_insert(con, INSERT_RECODE_NUM, 'test_name', '0', 'sample@com')
+    if not MEMORY:
+        con = db1.connect_db()
+
+    db1.create_table('name', 'age', 'email', con=con)
+    db1.query_insert('test_name', '0', 'sample@com', con=con, insert_num=INSERT_RECODE_NUM)
 
     db1.query_write_file(con=con, file_name=f"../../data/{DB_NAME}.sql")
     # db1.query_drop_(con)
