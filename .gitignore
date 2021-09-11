@@ -1,9 +1,11 @@
 .idea/
 __pycache__/
+log/
 
 # virtual environment
 venv/
 
 # extension
 *.db
+*.log
 *.sql
