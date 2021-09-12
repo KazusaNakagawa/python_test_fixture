@@ -22,10 +22,11 @@ def error(action, status, bucket_name: str, ex):
     })
 
 
-def info(action, status, bucket_name: str):
+def info(action, status, bucket_name: str, data=None):
     logger.info({
         'time': time.datetime_now(),
         'action': action,
         'status': status,
         'bucket name': bucket_name,
+        'data': data,
     })
