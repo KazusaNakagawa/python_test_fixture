@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 from api.models import logger_tool
+from config import const
 
 
 class Bucket(object):
@@ -79,9 +80,23 @@ class Bucket(object):
         upload_data: ex) sample.png
         """
         key = upload_data.split('/')[-1]
-        data = open(upload_data, 'rb')
 
-        self.resource_bucket.Bucket(bucket_name).put_object(Key=key, Body=data)
+        logger_tool.info(
+            action='upload',
+            status='run',
+            bucket_name=bucket_name,
+            data=key,
+        )
+
+        with open(upload_data, 'rb') as upload_data_file:
+            self.resource_bucket.Bucket(bucket_name).put_object(Key=key, Body=upload_data_file)
+
+        logger_tool.info(
+            action='upload',
+            status=200,
+            bucket_name=bucket_name,
+            data=key,
+        )
 
     def down_load_data(self):
         """
@@ -124,24 +139,18 @@ class Bucket(object):
 
 
 if __name__ == '__main__':
-    BUCKET_CREATE = 0
-    UPLOAD = 0
-    BUCKET_DELETE = 1
-
-    CLIENT = 's3'
-    BUCKET_NAME = 'testbucket-0911-2'
-    TOKYO_REGION = 'ap-northeast-1'
 
     # create instance
-    bucket1 = Bucket(client=CLIENT, bucket_name=BUCKET_NAME, region=TOKYO_REGION)
-    bucket2 = Bucket(client=CLIENT, bucket_name='testbucket-0912', region=TOKYO_REGION)
+    bucket1 = Bucket(client=const.CLIENT, bucket_name=const.BUCKET_NAME, region=const.TOKYO_REGION)
+    bucket2 = Bucket(client=const.CLIENT, bucket_name='testbucket-0912', region=const.TOKYO_REGION)
 
-    if BUCKET_CREATE:
+    if const.BUCKET_CREATE:
         bucket1.create_bucket()
-        bucket2.create_bucket()
+        # bucket2.create_bucket()
 
-    if UPLOAD:
-        bucket1.upload_data(bucket_name=BUCKET_NAME, upload_data='../../images/*.png')
+    if const.UPLOAD:
+        bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data='../../data/user.sql')
+        bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data='../../data/user.json')
 
-    if BUCKET_DELETE:
+    if const.BUCKET_DELETE:
         bucket1.delete_all_buckets()
