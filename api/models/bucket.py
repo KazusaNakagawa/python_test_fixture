@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 from api.models import logger_tool
+from config import const
 
 
 class Bucket(object):
@@ -39,7 +40,6 @@ class Bucket(object):
                 Bucket=bucket_name,
                 MaxKeys=max_key,
             )
-
             return True
 
         except ClientError as ex:
@@ -49,6 +49,7 @@ class Bucket(object):
                 bucket_name=bucket_name,
                 ex=ex
             )
+            return False
 
     def create_bucket(self):
         """
@@ -79,19 +80,63 @@ class Bucket(object):
         upload_data: ex) sample.png
         """
         key = upload_data.split('/')[-1]
-        data = open(upload_data, 'rb')
 
-        self.resource_bucket.Bucket(bucket_name).put_object(Key=key, Body=data)
+        logger_tool.info(
+            action='upload',
+            status='run',
+            bucket_name=bucket_name,
+            data=key,
+        )
+
+        with open(upload_data, 'rb') as upload_data_file:
+            self.resource_bucket.Bucket(bucket_name).put_object(Key=key, Body=upload_data_file)
+
+        logger_tool.info(
+            action='upload',
+            status=200,
+            bucket_name=bucket_name,
+            data=key,
+        )
 
     def down_load_data(self):
         """
         Bucket にあるファイルをダウンロードする
         """
 
-    def delete_data(self):
+    def delete_data(self, bucket_name: str, delete_data: str):
         """
         bucketにあるデータを削除
         """
+
+        key = delete_data.split('/')[-1]
+
+        logger_tool.info(
+            action='delete',
+            status='run',
+            bucket_name=bucket_name,
+            data=key,
+        )
+        try:
+            response = self.client.delete_object(
+                Bucket=bucket_name,
+                Key=key,
+            )
+            return response
+
+        except ClientError as ex:
+            logger_tool.error(
+                action='delete data',
+                status=404,
+                bucket_name=bucket_name,
+                ex=ex
+            )
+
+        logger_tool.info(
+            action='delete',
+            status=204,
+            bucket_name=bucket_name,
+            data=key,
+        )
 
     def print_bucket_name(self):
         """
@@ -114,34 +159,34 @@ class Bucket(object):
                 bucket_name=self.bucket_name
             )
 
-            [key.delete() for key in self.resource_bucket.buckets.all()]
+            response = [key.delete() for key in self.resource_bucket.buckets.all()]
 
             logger_tool.info(
                 action='delete',
                 status=204,
                 bucket_name=self.bucket_name
             )
+            return response
 
 
 if __name__ == '__main__':
-    BUCKET_CREATE = 0
-    UPLOAD = 0
-    BUCKET_DELETE = 1
-
-    CLIENT = 's3'
-    BUCKET_NAME = 'testbucket-0911-2'
-    TOKYO_REGION = 'ap-northeast-1'
+    data_list = ['../../data/user.sql', '../../data/user.json']
 
     # create instance
-    bucket1 = Bucket(client=CLIENT, bucket_name=BUCKET_NAME, region=TOKYO_REGION)
-    bucket2 = Bucket(client=CLIENT, bucket_name='testbucket-0912', region=TOKYO_REGION)
+    bucket1 = Bucket(client=const.CLIENT, bucket_name=const.BUCKET_NAME, region=const.TOKYO_REGION)
+    bucket2 = Bucket(client=const.CLIENT, bucket_name='testbucket-0912', region=const.TOKYO_REGION)
 
-    if BUCKET_CREATE:
+    if const.BUCKET_CREATE:
         bucket1.create_bucket()
-        bucket2.create_bucket()
+        # bucket2.create_bucket()
 
-    if UPLOAD:
-        bucket1.upload_data(bucket_name=BUCKET_NAME, upload_data='../../images/*.png')
+    if const.UPLOAD:
+        for data in data_list:
+            bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data=data)
 
-    if BUCKET_DELETE:
+    if const.DELETE:
+        for data in data_list:
+            bucket1.delete_data(bucket_name=const.BUCKET_NAME, delete_data=data)
+
+    if const.BUCKET_DELETE:
         bucket1.delete_all_buckets()
