@@ -1,14 +1,12 @@
 import logging
 
 from api.models import time
+from config import const
 
 from pathlib import Path
 
-LOGFILE_PATH = '../../log/'
-LOG_FILE = 'bucket.log'
-
-Path(LOGFILE_PATH).mkdir(exist_ok=True)
-logging.basicConfig(filename=Path(f"{LOGFILE_PATH}{LOG_FILE}"), level=logging.INFO)
+Path(const.LOGFILE_PATH).mkdir(exist_ok=True)
+logging.basicConfig(filename=Path(f"{const.LOGFILE_PATH}{const.LOG_FILE}"), level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
