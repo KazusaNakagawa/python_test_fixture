@@ -1,3 +1,6 @@
+LOGFILE_PATH = 'log/'
+LOG_FILE = 'bucket.log'
+
 DB_NAME = 'user'
 TABLE_NAME = 'user'
 INSERT_RECODE_NUM = 10
