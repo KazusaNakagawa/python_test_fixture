@@ -28,13 +28,21 @@ class Bucket(object):
     def is_bucket_check(self, bucket_name: str, max_key: int):
         """
         作成するbucket が既に存在するかチェックする
+        ref
+        ------
+            https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_objects
 
+        params
+        ------
+        bucket_name(str): bucket_name
+        max_key(int): response object max keys
 
-        :return:
+        return
+        -------
             bucketがある時はbucketを作成しない
         """
         # TODO:【暫定】例外でbucket有無の切り分ける方法は避けたい
-        # ref: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_objects
+
         try:
             response = self.client.list_objects_v2(
                 Bucket=bucket_name,
@@ -51,9 +59,17 @@ class Bucket(object):
             )
             return False
 
-    def create_bucket(self):
-        """
+    def create_bucket(self, max_key=2):
+        """ Bucket を作成する処理
+        ref
+        -------
         https://github.com/aws/aws-cli/issues/2603#issuecomment-349191935
+
+        params
+        -------
+        max_key(int): default: 2
+            is_bucket_check fuc args
+
         """
 
         logger_tool.info(
@@ -62,7 +78,7 @@ class Bucket(object):
             bucket_name=self.bucket_name
         )
 
-        if not self.is_bucket_check(self.bucket_name, 2):
+        if not self.is_bucket_check(self.bucket_name, max_key=max_key):
             self.client.create_bucket(
                 Bucket=self.bucket_name,
                 CreateBucketConfiguration={'LocationConstraint': self.region}
@@ -106,6 +122,16 @@ class Bucket(object):
     def delete_data(self, bucket_name: str, delete_data: str):
         """
         bucketにあるデータを削除
+
+        params
+        ------
+        bucket_name(str):  Bucket name
+        delete_data(data): 削除するファイル名
+
+        return
+        ------
+        response: 削除が成功した結果を返すレスポンス parameter
+
         """
 
         key = delete_data.split('/')[-1]
@@ -149,7 +175,12 @@ class Bucket(object):
     def delete_all_buckets(self):
         """
         全ての bucketを削除する
+
+        return
+        ------
+        response: bucket を削除した結果を返す response parameter
         """
+
         buckets = list(self.resource_bucket.buckets.all())
 
         if buckets:
