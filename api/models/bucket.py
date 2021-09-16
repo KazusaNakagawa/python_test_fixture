@@ -1,6 +1,7 @@
 import boto3
 
 from botocore.exceptions import ClientError
+from pathlib import Path
 
 from api.models import logger_tool
 from config import const
@@ -122,6 +123,8 @@ class Bucket(object):
         ------
         download_data(str): S3にある指定データを download する
         """
+        # download 用に作成
+        Path(const.TMP_PATH).mkdir(exist_ok=True)
 
         logger_tool.info(
             action='download',

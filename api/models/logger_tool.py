@@ -7,7 +7,6 @@ from pathlib import Path
 
 # CREATE DIR
 Path(const.LOGFILE_PATH).mkdir(exist_ok=True)
-Path(const.TMP_PATH).mkdir(exist_ok=True)
 
 logging.basicConfig(filename=Path(f"{const.LOGFILE_PATH}{const.LOG_FILE}"), level=logging.INFO)
 logger = logging.getLogger(__name__)
