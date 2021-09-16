@@ -1,15 +1,17 @@
 LOGFILE_PATH = 'log/'
 LOG_FILE = 'bucket.log'
+TMP_PATH = 'tmp/'
 
 DB_NAME = 'user'
 TABLE_NAME = 'user'
 INSERT_RECODE_NUM = 10
 
-BUCKET_CREATE = 1
+BUCKET_CREATE = 0
 BUCKET_DELETE = 1
 
 UPLOAD = 0
-DELETE = 0
+DOWNLOAD = 0
+DELETE = 1
 
 CLIENT = 's3'
 BUCKET_NAME = 'testbucket-0911-2'

@@ -26,7 +26,7 @@ def db_main():
 
 
 def bucket_main():
-    data_list = ['data/user.sql', 'data/user.json']
+    data_list = ['user.sql', 'user.json']
 
     # create instance
     bucket1 = Bucket(client=const.CLIENT, bucket_name=const.BUCKET_NAME, region=const.TOKYO_REGION)
@@ -40,9 +40,13 @@ def bucket_main():
         for data in data_list:
             bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data=data)
 
+    if const.DOWNLOAD:
+        for data in data_list:
+            bucket1.download_data(download_data=data)
+
     if const.DELETE:
         for data in data_list:
-            bucket1.delete_data(bucket_name=const.BUCKET_NAME, delete_data=data)
+            bucket1.delete_data(bucket_name=const.BUCKET_NAME, delete_data=f"data/{data}")
 
     if const.BUCKET_DELETE:
         bucket1.delete_all_buckets()
