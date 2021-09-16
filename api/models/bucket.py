@@ -114,10 +114,33 @@ class Bucket(object):
             data=key,
         )
 
-    def down_load_data(self):
+    def download_data(self, download_data: str):
         """
         Bucket にあるファイルをダウンロードする
+
+        params
+        ------
+        download_data(str): S3にある指定データを download する
+
         """
+
+        logger_tool.info(
+            action='download',
+            status='run',
+            bucket_name=self.bucket_name,
+            data=download_data,
+        )
+
+        self.resource_bucket.meta.client.download_file(
+            self.bucket_name, download_data, f"tmp/{download_data}"
+        )
+
+        logger_tool.info(
+            action='download',
+            status=204,
+            bucket_name=self.bucket_name,
+            data=download_data,
+        )
 
     def delete_data(self, bucket_name: str, delete_data: str):
         """
