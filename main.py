@@ -38,7 +38,7 @@ def bucket_main():
 
     if const.UPLOAD:
         for data in data_list:
-            bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data=data)
+            bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data=f"data/{data}")
 
     if const.DOWNLOAD:
         for data in data_list:
