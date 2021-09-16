@@ -1,6 +1,7 @@
 .idea/
 __pycache__/
 log/
+tmp/
 
 # virtual environment
 venv/
