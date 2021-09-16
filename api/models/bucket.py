@@ -199,9 +199,13 @@ class Bucket(object):
         """
         is select buckets
         """
+        buckets = [bucket.name for bucket in self.resource_bucket.buckets.all()]
 
-        for bucket in self.resource_bucket.Buckets.all():
-            print(bucket.name)
+        if not buckets:
+            return print('No Buckets')
+
+        if buckets:
+            print('Bucket list', buckets)
 
     def delete_all_buckets(self):
         """
