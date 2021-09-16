@@ -114,14 +114,13 @@ class Bucket(object):
             data=key,
         )
 
-    def download_data(self, download_data: str):
+    def download_data(self, download_data: str) -> None:
         """
         Bucket にあるファイルをダウンロードする
 
         params
         ------
         download_data(str): S3にある指定データを download する
-
         """
 
         logger_tool.info(
@@ -130,17 +129,23 @@ class Bucket(object):
             bucket_name=self.bucket_name,
             data=download_data,
         )
-
-        self.resource_bucket.meta.client.download_file(
-            self.bucket_name, download_data, f"tmp/{download_data}"
-        )
-
-        logger_tool.info(
-            action='download',
-            status=204,
-            bucket_name=self.bucket_name,
-            data=download_data,
-        )
+        try:
+            self.resource_bucket.meta.client.download_file(
+                self.bucket_name, download_data, f"tmp/{download_data}"
+            )
+            logger_tool.info(
+                action='download',
+                status=204,
+                bucket_name=self.bucket_name,
+                data=download_data,
+            )
+        except ClientError as ex:
+            logger_tool.error(
+                action='download',
+                status=404,
+                bucket_name=self.bucket_name,
+                ex=ex
+            )
 
     def delete_data(self, bucket_name: str, delete_data: str):
         """
