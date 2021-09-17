@@ -233,26 +233,3 @@ class Bucket(object):
                 bucket_name=self.bucket_name
             )
             return response
-
-
-if __name__ == '__main__':
-    data_list = ['../../data/user.sql', '../../data/user.json']
-
-    # create instance
-    bucket1 = Bucket(client=const.CLIENT, bucket_name=const.BUCKET_NAME, region=const.TOKYO_REGION)
-    bucket2 = Bucket(client=const.CLIENT, bucket_name='testbucket-0912', region=const.TOKYO_REGION)
-
-    if const.BUCKET_CREATE:
-        bucket1.create_bucket()
-        # bucket2.create_bucket()
-
-    if const.UPLOAD:
-        for data in data_list:
-            bucket1.upload_data(bucket_name=const.BUCKET_NAME, upload_data=data)
-
-    if const.DELETE:
-        for data in data_list:
-            bucket1.delete_data(bucket_name=const.BUCKET_NAME, delete_data=data)
-
-    if const.BUCKET_DELETE:
-        bucket1.delete_all_buckets()
