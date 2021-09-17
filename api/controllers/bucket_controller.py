@@ -6,6 +6,7 @@ def s3_bucket_management():
     """ aws s3 management """
     management_bucket = bucket.Bucket(client=const.CLIENT, bucket_name=const.BUCKET_NAME, region=const.TOKYO_REGION)
 
+    # TODO: 指定 Directory のファイルを格納する
     data_list = ['user.sql', 'user.json']
 
     if const.BUCKET_CREATE:
@@ -26,4 +27,5 @@ def s3_bucket_management():
     if const.BUCKET_DELETE:
         management_bucket.delete_all_buckets()
 
+    # 最終的に存在している Bucketを確認する
     management_bucket.print_bucket_name()
