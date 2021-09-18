@@ -57,6 +57,17 @@ class Bucket(object):
             )
             raise err
 
+        except self.client.exceptions.BucketAlreadyOwnedByYou as err:
+            logger_tool.error(
+                module=__name__,
+                action='create',
+                status=409,
+                bucket_name=self.bucket_name,
+                ex=err,
+                msg="Bucket {} already Owned By You!".format(err.response['Error']['BucketName']),
+            )
+            raise err
+
         logger_tool.info(
             module=__name__,
             action='create',
