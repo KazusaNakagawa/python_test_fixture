@@ -12,13 +12,14 @@ logging.basicConfig(filename=Path(f"{const.LOGFILE_PATH}{const.LOG_FILE}"), leve
 logger = logging.getLogger(__name__)
 
 
-def error(action, status, bucket_name: str, ex):
+def error(action, status, bucket_name: str, ex, msg=None):
     logger.error({
         'time': time.datetime_now(),
         'action': action,
         'status': status,
         'bucket name': bucket_name,
         'except': ex,
+        'msg': msg,
     })
 
 
