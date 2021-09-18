@@ -3,23 +3,22 @@ import boto3
 from botocore.exceptions import ClientError
 from pathlib import Path
 
-from api.models import logger_tool
-from config import const
+from config import const, logger_tool
 
 
 class Bucket(object):
     """
-    https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-example-creating-buckets.html
+    AWS S3 Bucket 操作する model
     """
 
     def __init__(self, client: str, bucket_name: str, region: str):
-        """
+        """ initialization parameter
 
         params
         ------
-        client(str): s3
-        bucket_name(str): choice bucket name
-        region(str): Region code
+            client(str): s3
+            bucket_name(str): choice bucket name
+            region(str): Region code
         """
         self.client = boto3.client(client)
         self.resource_bucket = boto3.resource(client)
@@ -28,18 +27,14 @@ class Bucket(object):
 
     def create_bucket(self):
         """ Bucket を作成する処理
-        ref
-        -------
-        https://github.com/aws/aws-cli/issues/2603#issuecomment-349191935
 
         params
         -------
-        max_key(int): default: 2
-            is_bucket_check fuc args
-
+            max_key(int): default: 2
+                is_bucket_check fuc args
         """
-
         logger_tool.info(
+            module=__name__,
             action='create',
             status='run',
             bucket_name=self.bucket_name
@@ -53,6 +48,7 @@ class Bucket(object):
 
         except self.client.exceptions.BucketAlreadyExists as err:
             logger_tool.error(
+                module=__name__,
                 action='create',
                 status=409,
                 bucket_name=self.bucket_name,
@@ -62,6 +58,7 @@ class Bucket(object):
             raise err
 
         logger_tool.info(
+            module=__name__,
             action='create',
             status=200,
             bucket_name=self.bucket_name
@@ -71,11 +68,12 @@ class Bucket(object):
         """
         params
         ------
-        upload_data: ex) sample.png
+            upload_data: ex) sample.png
         """
         key = upload_data.split('/')[-1]
 
         logger_tool.info(
+            module=__name__,
             action='upload',
             status='run',
             bucket_name=bucket_name,
@@ -86,6 +84,7 @@ class Bucket(object):
             self.resource_bucket.Bucket(bucket_name).put_object(Key=key, Body=upload_data_file)
 
         logger_tool.info(
+            module=__name__,
             action='upload',
             status=200,
             bucket_name=bucket_name,
@@ -98,12 +97,13 @@ class Bucket(object):
 
         params
         ------
-        download_data(str): S3にある指定データを download する
+            download_data(str): S3にある指定データを download する
         """
         # download 用に作成
         Path(const.TMP_PATH).mkdir(exist_ok=True)
 
         logger_tool.info(
+            module=__name__,
             action='download',
             status='run',
             bucket_name=self.bucket_name,
@@ -114,6 +114,7 @@ class Bucket(object):
                 self.bucket_name, download_data, f"tmp/{download_data}"
             )
             logger_tool.info(
+                module=__name__,
                 action='download',
                 status=204,
                 bucket_name=self.bucket_name,
@@ -121,6 +122,7 @@ class Bucket(object):
             )
         except ClientError as ex:
             logger_tool.error(
+                module=__name__,
                 action='download',
                 status=404,
                 bucket_name=self.bucket_name,
@@ -133,18 +135,18 @@ class Bucket(object):
 
         params
         ------
-        bucket_name(str):  Bucket name
-        delete_data(data): 削除するファイル名
+            bucket_name(str):  Bucket name
+            delete_data(data): 削除するファイル名
 
         return
         ------
-        response: 削除が成功した結果を返すレスポンス parameter
-
+            response: 削除が成功した結果を返すレスポンス parameter
         """
 
         key = delete_data.split('/')[-1]
 
         logger_tool.info(
+            module=__name__,
             action='delete',
             status='run',
             bucket_name=bucket_name,
@@ -159,6 +161,7 @@ class Bucket(object):
 
         except ClientError as ex:
             logger_tool.error(
+                module=__name__,
                 action='delete data',
                 status=404,
                 bucket_name=bucket_name,
@@ -166,6 +169,7 @@ class Bucket(object):
             )
 
         logger_tool.info(
+            module=__name__,
             action='delete',
             status=204,
             bucket_name=bucket_name,
@@ -190,13 +194,14 @@ class Bucket(object):
 
         return
         ------
-        response: bucket を削除した結果を返す response parameter
+            response: bucket を削除した結果を返す response parameter
         """
 
         buckets = list(self.resource_bucket.buckets.all())
 
         if buckets:
             logger_tool.info(
+                module=__name__,
                 action='delete',
                 status='run',
                 bucket_name=self.bucket_name
@@ -205,6 +210,7 @@ class Bucket(object):
             response = [key.delete() for key in self.resource_bucket.buckets.all()]
 
             logger_tool.info(
+                module=__name__,
                 action='delete',
                 status=204,
                 bucket_name=self.bucket_name
