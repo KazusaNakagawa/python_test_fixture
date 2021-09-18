@@ -26,41 +26,7 @@ class Bucket(object):
         self.bucket_name = bucket_name
         self.region = region
 
-    def is_bucket_check(self, bucket_name: str, max_key: int):
-        """
-        作成するbucket が既に存在するかチェックする
-        ref
-        ------
-            https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_objects
-
-        params
-        ------
-        bucket_name(str): bucket_name
-        max_key(int): response object max keys
-
-        return
-        -------
-            bucketがある時はbucketを作成しない
-        """
-        # TODO:【暫定】例外でbucket有無の切り分ける方法は避けたい
-
-        try:
-            response = self.client.list_objects_v2(
-                Bucket=bucket_name,
-                MaxKeys=max_key,
-            )
-            return True
-
-        except ClientError as ex:
-            logger_tool.error(
-                action='bucket check',
-                status='error',
-                bucket_name=bucket_name,
-                ex=ex
-            )
-            return False
-
-    def create_bucket(self, max_key=2):
+    def create_bucket(self):
         """ Bucket を作成する処理
         ref
         -------
@@ -79,16 +45,27 @@ class Bucket(object):
             bucket_name=self.bucket_name
         )
 
-        if not self.is_bucket_check(self.bucket_name, max_key=max_key):
+        try:
             self.client.create_bucket(
                 Bucket=self.bucket_name,
                 CreateBucketConfiguration={'LocationConstraint': self.region}
             )
-            logger_tool.info(
+
+        except self.client.exceptions.BucketAlreadyExists as err:
+            logger_tool.error(
                 action='create',
-                status=200,
-                bucket_name=self.bucket_name
+                status=409,
+                bucket_name=self.bucket_name,
+                ex=err,
+                msg="Bucket {} already exists!".format(err.response['Error']['BucketName']),
             )
+            raise err
+
+        logger_tool.info(
+            action='create',
+            status=200,
+            bucket_name=self.bucket_name
+        )
 
     def upload_data(self, bucket_name: str, upload_data: str):
         """
